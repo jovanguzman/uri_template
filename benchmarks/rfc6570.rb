@@ -29,7 +29,7 @@ a = Arena::Group.new('main') do
       Addressable::Template.new(tpl).expand(variables)
     end
 
-    implementation(:rfc6570) do |tpl, variables|
+    implementation(:rfc50) do |tpl, variables|
       URITemplate.new(tpl).expand(variables)
     end
 
