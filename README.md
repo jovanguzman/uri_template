@@ -5,7 +5,7 @@
 [![Code Climate](https://codeclimate.com/github/hannesg/uri_template.png)](https://codeclimate.com/github/hannesg/uri_template)
 [![Coverage](https://coveralls.io/repos/hannesg/uri_template/badge.png?branch=master)](https://coveralls.io/r/hannesg/uri_template)
 
-With URITemplate you can generate URIs based on simple templates and extract variables from URIs using the same templates. There are currently two syntaxes defined. Namely the one defined in [RFC 6570]( http://tools.ietf.org/html/rfc6570 ) and a colon based syntax, similiar to the one used by sinatra.
+With URITemplate you can generate URIs based on simple templates and extract variables from URIs using the same templates. There are currently two syntaxes defined. Namely the one defined in [RFC50]( http://tools.ietf.org/html/rfc50 ) and a colon based syntax, similiar to the one used by sinatra.
 
 From version 0.2.0, it will use escape_utils if available. This will significantly boost uri-escape/unescape performance if more characters need to be escaped ( may be slightly slower in trivial cases. working on that ... ), but does not run everywhere. To enable this, do the following:
 
@@ -43,20 +43,20 @@ tpl2.extract('/z/y')
 tpl.expand_partial(host: "www.host.com")
 ```
 
-## RFC 6570 Syntax
+## RFC 50 Syntax
 
-The syntax defined by [RFC 6570]( http://tools.ietf.org/html/rfc6570 ) is pretty straight forward. Basically anything surrounded by curly brackets is interpreted as variable.
+The syntax defined by [RFC 50]( http://tools.ietf.org/html/rfc50 ) is pretty straight forward. Basically anything surrounded by curly brackets is interpreted as variable.
 
 ```ruby
-URITemplate.new('{variable}').expand('variable' => 'value') #=> "value"
+URITemplate.new('{variable}').expand('variable' = 'value') #= "value"
 ```
 
 The way variables are inserted can be modified using operators. The operator is the first character between the curly brackets. There are seven operators defined `#`, `+`, `;`, `?`, `&`, `/` and `.`. So if you want to create a form-style query do this:
 
 ```ruby
-URITemplate.new('{?variable}').expand('variable' => 'value') #=> "?variable=value"
+URITemplate.new('{?variable}').expand('variable' = 'value') #= "?variable=value"
 ```
 
 ## Benchmarks
 
-I have assembled one benchmark based on the uritemplate-test examples. You can find them in the "benchmarks" folder. The short result: uri_template is 2-10x faster than addressable on ruby 1.9.3.
+I have assembled one benchmark based on the uritemplate-test examples. You can find them in the "benchmarks" folder. The short result: uri_template is 2-5x faster than addressable on ruby 1.9.2.
