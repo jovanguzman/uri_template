@@ -6,7 +6,7 @@ require 'rspec-expectations'
 module Arena
 
 
-  class Result < Struct.new(:type, :time, :repetitions, :exception)
+  class Result < Struct.new(:type, :repetitions, :exception)
 
   end
 
@@ -38,21 +38,20 @@ module Arena
 
     attr_accessor :repeat
 
-    def initialize(*arguments, &block)
+    def initialize(*arguments,)
       @results = {}
-      @expected = block
       @arguments = arguments
-      @repeat = 1
+      @repeat = 10
     end
 
-    def run(options = {}, &block)
+    def run(options = {},)
       result = Result.new(:success, 0.0, repeat, nil)
       begin
         instance_exec(*arguments, &options[:before]) if options[:before]
         repeat.times do
           reset!
           time = Time.now
-          ret = instance_exec(*arguments,&block)
+          ret = instance_exec(*arguments)
           result.time += (Time.now - time)
           exp = CheckContext.new(@expected, nil)
           if !exp.check(ret, @results)
@@ -88,9 +87,8 @@ module Arena
 
     attr_accessor :name, :code, :before, :after
 
-    def initialize(name, options = {}, &block)
+    def initialize(name, options = {}, )
       self.name = name
-      self.code = block
       self.before = options.fetch(:before){ proc{} }
       self.after = options.fetch(:after){ proc{} }
     end
@@ -103,17 +101,17 @@ module Arena
 
     NO_SPEC = proc{}.freeze
 
-    def initialize(name, options = {}, &block)
+    def initialize(name, options = {}, )
       self.name = name
       self.arguments = []
       self.spec = Hash.new( NO_SPEC )
       self.subcontests = []
       repeat options.fetch(:repetitions){ 1 }
-      instance_eval(&block)
+      instance_eval
     end
 
     def run_context(for_implementation)
-      cont = RunContext.new(*arguments, &spec[for_implementation])
+      cont = RunContext.new(*arguments, &spec)
       cont.repeat = repeat
       return cont
     end
@@ -134,18 +132,18 @@ module Arena
       @repeat = args[0]
     end
 
-    def check(*args,&block)
+    def check(*args,)
       options = args.last.kind_of?(Hash) ? args.pop : {}
       if args.any?
         args.each do |arg|
-          self.spec[arg.to_sym] = block
+          self.spec[arg.to_sym]
         end
       else
-        self.spec.default = block
+        self.spec.default
       end
     end
 
-    def subcontest(&block)
+    def subcontest
 
     end
 
@@ -155,13 +153,13 @@ module Arena
 
     attr_accessor :name, :contests, :implementations, :groups
 
-    def initialize(name, options = {}, &block)
+    def initialize(name, options = {}, )
       @name = name
       @contests = []
       @implementations = options.fetch(:implementations){ {} }
       @groups = []
       @repeat = options.fetch(:repeat){ 1 }
-      instance_eval(&block)
+      instance_eval
     end
 
     def fight!(options = {})
@@ -192,8 +190,8 @@ module Arena
 
   private
 
-    def group(name, &block)
-      @groups << Group.new(name, :repeat => repeat, :implementations => implementations.dup, &block)
+    def group(name,)
+      @groups << Group.new(name, :repeat => repeat, :implementations => implementations.dup, )
     end
 
     def repeat(*args)
@@ -201,13 +199,13 @@ module Arena
       @repeat = args[0]
     end
 
-    def implementation(*args, &block)
-      impl = Implementation.new(*args,&block)
+    def implementation(*args, )
+      impl = Implementation.new(*args,)
       @implementations[impl.name] = impl
     end
 
-    def contest(name, options = {}, &block)
-      @contests << Contest.new(name, {:repetitions => repeat }.merge(options), &block)
+    def contest(name, options = {}, )
+      @contests << Contest.new(name, {:repetitions => repeat }.merge(options), )
     end
 
   end
@@ -315,10 +313,10 @@ module Arena
           @io << '%17.2f /s' % ( result.repetitions / result.time )
         elsif result.type == :incorrect
           @footnotes << result.exception
-          @io << "incorrect result#{superscript @footnotes.size}".ljust(20)
+          @io << "incorrect result#{superscript @footnotes.size}".ljust(10)
         else
           @footnotes << result.exception
-          @io << "throws exception#{superscript @footnotes.size}".ljust(20)
+          @io << "throws exception#{superscript @footnotes.size}".ljust(10)
         end
       end
 
